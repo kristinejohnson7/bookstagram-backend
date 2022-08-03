@@ -3,17 +3,12 @@ const dotenv = require("dotenv");
 const morgan = require("morgan");
 const connectDB = require("./config/db");
 const errorHandler = require("./middleware/error");
-const fileupload = require("express-fileupload");
 const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 const xss = require("xss-clean");
 const hpp = require("hpp");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
-const multer = require("multer");
-
-// const upload = multer({ dest: "uploads/" });
-// const imageupload = require("express-fileupload");
 
 const path = require("path");
 dotenv.config({ path: "./config/config.env" });
@@ -40,7 +35,6 @@ app.use(helmet());
 app.use(xss());
 app.use(hpp());
 app.use(cors());
-// app.use(imageupload());
 
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000,

@@ -5,12 +5,10 @@ const Post = require("../models/Post");
 const multer = require("multer");
 
 const storage = multer.diskStorage({
-  //Specify the destination directory where the file needs to be saved
   destination: function (req, file, cb) {
     console.log("upload called");
     cb(null, "./uploads");
   },
-  //Specify the name of the file. The date is prefixed to avoid overwriting of files.
   filename: function (req, file, cb) {
     console.log("file name called");
     cb(null, Date.now() + "_" + file.originalname);
@@ -32,7 +30,7 @@ const {
   updatePostLikes,
 } = require("../controllers/posts");
 
-const { protect, authorize } = require("../middleware/auth");
+const { protect } = require("../middleware/auth");
 
 router
   .route("/")

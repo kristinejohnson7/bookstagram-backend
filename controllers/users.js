@@ -17,7 +17,6 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
 
 exports.getUser = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id);
-  console.log("user", user);
   if (!user) {
     return next(new ErrorResponse("User not found", 404));
   }
@@ -33,12 +32,9 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 //@access PRIVATE/ADMIN
 
 exports.createUser = asyncHandler(async (req, res, next) => {
-  console.log("line 36");
   const photo = req.file;
-  console.log("line 38");
   const callback = async (location) => {
     const user = await User.create({ ...req.body, photo: location });
-    console.log("line 41");
     res.status(200).json({
       success: true,
       data: user,

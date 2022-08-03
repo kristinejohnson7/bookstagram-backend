@@ -4,23 +4,6 @@ const asyncHandler = require("../middleware/async");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
 
-//@desc Register user
-//@route POST / api/v1/auth/register
-//@access PUBLIC
-
-exports.register = asyncHandler(async (req, res, next) => {
-  const { name, email, password, role } = req.body;
-
-  const user = await User.create({
-    name,
-    email,
-    password,
-    role,
-  });
-
-  sendTokenResponse(user, 200, res);
-});
-
 //@desc Login user
 //@route POST / api/v1/auth/login
 //@access PUBLIC
@@ -131,12 +114,10 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   const resetToken = user.getResetPasswordToken();
   await user.save({ validateBeforeSave: false });
 
-  const resetUrl = `${req.protocol}://${req.get(
-    "host"
-  )}/api/v1/auth/resetpassword/${resetToken}`;
+  const resetUrl = `${process.env.APP_URL}/reset/${resetToken}`;
 
   const message = `
-  You are receiving this email because you (or someone else) has requested a password reset. Please make a [PUT] request to: ${resetUrl}
+  You are receiving this email because you (or someone else) has requested a password reset. Please reset your password at: ${resetUrl}
   `;
 
   const options = {
@@ -155,11 +136,6 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
     await user.save({ validateBeforeSave: false });
     return next(new ErrorResponse("Email could not be sent", 500));
   }
-
-  // res.status(200).json({
-  //   success: true,
-  //   data: user,
-  // });
 });
 
 //@desc Reset password
@@ -171,27 +147,32 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     .createHash("sha256")
     .update(req.params.resettoken)
     .digest("hex");
+  console.log("line 172");
 
   const user = await User.findOne({
     resetPasswordToken,
     resetPasswordExpired: { $gt: Date.now() },
   });
-
+  console.log("user", user);
   if (!user) {
     return next(new ErrorResponse("Invalid token", 400));
   }
+  console.log("182");
 
   user.password = req.body.password;
+  console.log("185");
   user.resetPasswordToken = undefined;
+  console.log("187");
   user.resetPasswordExpired = undefined;
-  await user.save();
-
+  console.log(user.password);
+  await user.save().catch(console.error);
+  console.log("188");
   sendTokenResponse(user, 200, res);
 });
 
 const sendTokenResponse = (user, statusCode, res) => {
   const token = user.getSignedJwt();
-
+  console.log("194");
   const options = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
@@ -202,7 +183,7 @@ const sendTokenResponse = (user, statusCode, res) => {
   if (process.env.NODE_ENV === "production") {
     options.secure = true;
   }
-
+  console.log("205");
   res
     .status(statusCode)
     .cookie("token", token, options)
