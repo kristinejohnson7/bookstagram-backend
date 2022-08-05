@@ -23,7 +23,6 @@ const UserSchema = new mongoose.Schema({
   },
   photo: {
     type: String,
-    required: [true, "Please a user profile picture"],
   },
   password: {
     type: String,
@@ -36,10 +35,6 @@ const UserSchema = new mongoose.Schema({
   createAt: {
     type: Date,
     default: Date.now(),
-  },
-  userLikes: {
-    type: Array,
-    default: [],
   },
 });
 

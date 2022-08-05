@@ -6,11 +6,9 @@ const multer = require("multer");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    console.log("upload called");
     cb(null, "./uploads");
   },
   filename: function (req, file, cb) {
-    console.log("file name called");
     cb(null, Date.now() + "_" + file.originalname);
   },
 });
@@ -28,13 +26,17 @@ const {
 
 const { protect } = require("../middleware/auth");
 
-router.use(protect);
+// router.use(protect);
 
 router
   .route("/")
   .get(filteredResults(User), getUsers)
   .post(upload.single("photo"), createUser);
 
-router.route("/:id").get(getUser).put(updateUser).delete(protect, deleteUser);
+router
+  .route("/:id")
+  .get(getUser)
+  .put(upload.single("photo"), updateUser)
+  .delete(protect, deleteUser);
 
 module.exports = router;

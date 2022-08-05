@@ -13,21 +13,18 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
   const posts = [...res.filteredResults.data];
   const mergedPosts = [];
   const users = await User.find({});
-  posts.forEach((post, index) => {
-    mergedPosts.push({ ...post.toObject() });
-    try {
-      const user = `${post.user}`;
-      const { name } =
-        users.find((singleUser) => {
-          return `${singleUser._id}`.indexOf(user) > -1;
-        }) || {};
-      mergedPosts[index].userName = name;
-    } catch (err) {
-      console.error(err);
-    }
+  posts.forEach(async (post) => {
+    const user = users.find(
+      (user) => user._id.toString() === post.user.toString()
+    );
+    mergedPosts.push({
+      ...post.toObject(),
+      userName: user.userName,
+      name: user.name,
+      avatar: user.photo,
+    });
   });
-  res.filteredResults.data = mergedPosts;
-  res.status(200).json(res.filteredResults);
+  res.status(200).json(mergedPosts);
 });
 
 //@desc Get single post
@@ -36,8 +33,6 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
 
 exports.getPost = asyncHandler(async (req, res, next) => {
   const post = await Post.findById(req.params.id);
-  console.log("post", post);
-
   if (!post) {
     next(new ErrorResponse(`Post not found with id of ${req.params.id}`, 404));
   }
@@ -107,7 +102,6 @@ exports.updatePostLikes = async (req, res, next) => {
       }
     );
     if (!post) {
-      console.log("no post", post);
       console.log(post), res.status(400).json({ success: false });
     }
     res.status(200).json({ success: true, data: post.likes });
@@ -153,15 +147,6 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
       new ErrorResponse(`Post not found with id of ${req.param.id}`, 404)
     );
   }
-
-  // if (post.user.toString() !== req.user.id && req.user.role !== "admin") {
-  //   return next(
-  //     new ErrorResponse(
-  //       `User ${req.params.id} is not authorized to delete this post`,
-  //       401
-  //     )
-  //   );
-  // }
 
   post.remove();
 

@@ -40,7 +40,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
       data: user,
     });
   };
-  generateUploadURL(`${Date.now()}`, photo.path, callback);
+  generateUploadURL(`${Date.now()}`, photo?.path, callback);
 });
 
 //@desc Update user
@@ -48,14 +48,22 @@ exports.createUser = asyncHandler(async (req, res, next) => {
 //@access PRIVATE/ADMIN
 
 exports.updateUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  res.status(200).json({
-    success: true,
-    data: user,
-  });
+  const photo = req.file;
+  const callback = async (location) => {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body, photo: location },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  };
+  generateUploadURL(`${Date.now()}`, photo?.path, callback);
 });
 
 //@desc Delete user

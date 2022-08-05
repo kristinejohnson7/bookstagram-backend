@@ -26,9 +26,12 @@ const deleteUploadedFile = (imagePath) => {
 };
 
 module.exports = function generateUploadURL(imageName, imagePath, callback) {
+  if (!imagePath) {
+    return callback();
+  }
   const params = {
     Bucket: bucketName,
-    Key: imageName,
+    Key: imageName + Date.now(),
     Body: readUploadedFile(imagePath),
     Expires: 60,
   };
