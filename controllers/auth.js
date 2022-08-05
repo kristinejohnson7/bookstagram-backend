@@ -147,32 +147,22 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     .createHash("sha256")
     .update(req.params.resettoken)
     .digest("hex");
-  console.log("line 172");
-
   const user = await User.findOne({
     resetPasswordToken,
     resetPasswordExpired: { $gt: Date.now() },
   });
-  console.log("user", user);
   if (!user) {
     return next(new ErrorResponse("Invalid token", 400));
   }
-  console.log("182");
-
   user.password = req.body.password;
-  console.log("185");
   user.resetPasswordToken = undefined;
-  console.log("187");
   user.resetPasswordExpired = undefined;
-  console.log(user.password);
   await user.save().catch(console.error);
-  console.log("188");
   sendTokenResponse(user, 200, res);
 });
 
 const sendTokenResponse = (user, statusCode, res) => {
   const token = user.getSignedJwt();
-  console.log("194");
   const options = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
@@ -183,7 +173,6 @@ const sendTokenResponse = (user, statusCode, res) => {
   if (process.env.NODE_ENV === "production") {
     options.secure = true;
   }
-  console.log("205");
   res
     .status(statusCode)
     .cookie("token", token, options)

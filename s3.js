@@ -16,7 +16,6 @@ const s3 = new aws.S3({
 });
 
 const readUploadedFile = (imagePath) => {
-  console.log("dirname", __dirname);
   const data = fs.readFileSync(__dirname + "/" + imagePath);
   return data;
 };
@@ -37,8 +36,6 @@ module.exports = function generateUploadURL(imageName, imagePath, callback) {
   };
 
   s3.upload(params, (error, data) => {
-    console.log("data", data);
-    console.log(error);
     deleteUploadedFile(imagePath);
     callback(data.Location);
   });
