@@ -30,11 +30,17 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+
 app.use(mongoSanitize());
 app.use(helmet());
 app.use(xss());
 app.use(hpp());
-app.use(cors({ origin: "*" }));
+app.use(cors(corsOptions));
 
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000,
