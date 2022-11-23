@@ -30,17 +30,17 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-const corsOptions = {
-  origin: "https://bookstagram7.cyclic.app/",
-  credentials: true,
-  optionSuccessStatus: 200,
-};
+// const corsOptions = {
+//   origin: "https://bookstagram7.cyclic.app/",
+//   credentials: true,
+//   optionSuccessStatus: 200,
+// };
 
 app.use(mongoSanitize());
 app.use(helmet());
 app.use(xss());
 app.use(hpp());
-app.use(cors(corsOptions));
+app.use(cors({ origin: "*" }));
 
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000,
