@@ -3,6 +3,16 @@ const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 const generateUploadURL = require("../s3");
 
+const aws = require("aws-sdk");
+const { randomBytes, ...crypto } = require("crypto");
+const { promisify } = require("util");
+const fs = require("fs");
+
+const region = "us-east-1";
+const bucketName = "bookstagram-direct-upload-s3";
+const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+
 //@desc Get all users
 //@route GET / api/v1/users
 //@access PRIVATE/ADMIN
@@ -32,15 +42,30 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 //@access PRIVATE/ADMIN
 
 exports.createUser = asyncHandler(async (req, res, next) => {
-  const photo = req.file;
-  const callback = async (location) => {
-    const user = await User.create({ ...req.body, photo: location });
-    res.status(200).json({
-      success: true,
-      data: user,
-    });
-  };
-  generateUploadURL(`${Date.now()}`, photo?.path, callback);
+  const filename = req.file;
+
+  const photo = await s3
+    .putObject({
+      Body: JSON.stringify(req.body),
+      Bucket: accessKeyId,
+      Key: filename,
+    })
+    .promise();
+
+  const user = await User.create({ ...req.body, photo });
+
+  res.status(200).json({
+    success: true,
+    data: user,
+  });
+  // const callback = async (location) => {
+  //   const user = await User.create({ ...req.body, photo: location });
+  //   res.status(200).json({
+  //     success: true,
+  //     data: user,
+  //   });
+  // };
+  // generateUploadURL(`${Date.now()}`, photo?.path, callback);
 });
 
 //@desc Update user
