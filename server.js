@@ -31,7 +31,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: "https://bookstagram7.cyclic.app/api/v1",
   credentials: true,
   optionSuccessStatus: 200,
 };
