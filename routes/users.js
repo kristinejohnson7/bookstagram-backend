@@ -4,9 +4,9 @@ const filteredResults = require("../middleware/filteredResults");
 const User = require("../models/User");
 const multer = require("multer");
 
-const storage = multer.diskStorage({
+const storage = multer.memoryStorage({
   destination: function (req, file, cb) {
-    cb(null, "tmp/");
+    cb(null, true);
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + "_" + file.originalname);
