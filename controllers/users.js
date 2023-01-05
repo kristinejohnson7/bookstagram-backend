@@ -49,22 +49,27 @@ const s3 = new aws.S3({
 });
 
 exports.createUser = asyncHandler(async (req, res, next) => {
-  const filename = req.file;
+  // const filename = req.file;
 
-  const photo = await s3
-    .putObject({
-      Body: JSON.stringify(req.body),
-      Bucket: accessKeyId,
-      Key: filename,
-    })
-    .promise();
+  // const photo = await s3
+  //   .putObject({
+  //     Body: JSON.stringify(req.body),
+  //     Bucket: accessKeyId,
+  //     Key: filename,
+  //   })
+  //   .promise();
 
-  const user = await User.create({ ...req.body, photo });
+  const photo = req.file;
+  const callback = async (location) => {
+    const user = await User.create({ ...req.body, photo: location });
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  };
 
-  res.status(200).json({
-    success: true,
-    data: user,
-  });
+  // const user = await
+
   // const callback = async (location) => {
   //   const user = await User.create({ ...req.body, photo: location });
   //   res.status(200).json({
@@ -72,7 +77,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
   //     data: user,
   //   });
   // };
-  // generateUploadURL(`${Date.now()}`, photo?.path, callback);
+  generateUploadURL(`${Date.now()}`, photo.path, callback);
 });
 
 //@desc Update user
