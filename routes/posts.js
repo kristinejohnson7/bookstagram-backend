@@ -5,9 +5,8 @@ const Post = require("../models/Post");
 const multer = require("multer");
 
 const storage = multer.diskStorage({
-  // destination: require.main?.path + "/" + "public/uploads/",
-  function(req, file, cb) {
-    cb(null, "var/task/tmp/");
+  destination: function (req, file, cb) {
+    cb(null, "./uploads");
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + "_" + file.originalname);
