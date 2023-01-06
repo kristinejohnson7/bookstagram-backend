@@ -58,8 +58,6 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5005;
 
-console.log(process.env.AWS_ACCESS_KEY, process.env.AWS_SECRET_KEY);
-
 connectDB().then(() => {
   const server = app.listen(
     PORT,
