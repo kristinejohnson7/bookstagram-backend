@@ -13,8 +13,6 @@ const rateLimit = require("express-rate-limit");
 const path = require("path");
 dotenv.config({ path: "./config/config.env" });
 
-connectDB();
-
 // Route files
 
 const auth = require("./routes/auth");
@@ -60,12 +58,16 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5005;
 
-const server = app.listen(
-  PORT,
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
-);
+connectDB().then(() => {
+  const server = app.listen(
+    PORT,
+    console.log(
+      `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
+    )
+  );
 
-process.on("unhandledRejection", (err) => {
-  console.log(`Error: ${err.message}`);
-  server.close(() => process.exit(1));
+  process.on("unhandledRejection", (err) => {
+    console.log(`Error: ${err.message}`);
+    server.close(() => process.exit(1));
+  });
 });
