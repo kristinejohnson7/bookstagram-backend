@@ -41,13 +41,6 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 //@route POST / api/v1/users
 //@access PRIVATE/ADMIN
 
-const s3 = new aws.S3({
-  region,
-  accessKeyId,
-  secretAccessKey,
-  signatureVersion: "v4",
-});
-
 exports.createUser = asyncHandler(async (req, res, next) => {
   const user = await User.create({ ...req.body, photo: req.file.location });
   res.status(200).json({
