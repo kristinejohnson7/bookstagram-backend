@@ -3,19 +3,12 @@ const router = express.Router();
 const filteredResults = require("../middleware/filteredResults");
 const User = require("../models/User");
 const multer = require("multer");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./uploads");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "_" + file.originalname);
-  },
-});
+const { storage } = require("../s3");
 
 const upload = multer({
   storage: storage,
 });
+
 const {
   getUsers,
   getUser,

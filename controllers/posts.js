@@ -57,12 +57,8 @@ exports.getPostLikes = asyncHandler(async (req, res, next) => {
 // @access PRIVATE
 
 exports.createPost = asyncHandler(async (req, res, next) => {
-  const photo = req.file;
-  const callback = async (location) => {
-    const post = await Post.create({ ...req.body, photo: location });
-    res.status(201).json({ success: true, data: post });
-  };
-  generateUploadURL(`${Date.now()}`, photo.path, callback);
+  const post = await Post.create({ ...req.body, photo: req.file.location });
+  res.status(201).json({ success: true, data: post });
 });
 
 //@desc Update single post

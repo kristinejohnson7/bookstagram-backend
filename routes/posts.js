@@ -4,14 +4,18 @@ const filteredResults = require("../middleware/filteredResults");
 const Post = require("../models/Post");
 const multer = require("multer");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./uploads");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "_" + file.originalname);
-  },
-});
+const { storage } = require("../s3");
+
+// const aws = require("aws-sdk");
+
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "./uploads");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + "_" + file.originalname);
+//   },
+// });
 
 const upload = multer({
   storage: storage,
