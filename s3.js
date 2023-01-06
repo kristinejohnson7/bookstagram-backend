@@ -10,11 +10,14 @@ const bucketName = "bookstagram-direct-upload-s3";
 const accessKeyId = process.env.AWS_ACCESS_KEY;
 const secretAccessKey = process.env.AWS_SECRET_KEY;
 
+console.log(accessKeyId, secretAccessKey);
+
 const s3 = new S3Client({
   region,
-  accessKeyId,
-  secretAccessKey,
-  signatureVersion: "v4",
+  credentials: {
+    accessKeyId,
+    secretAccessKey,
+  },
 });
 
 const storage = multerS3({
